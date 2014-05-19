@@ -5,17 +5,17 @@ namespace paunch {
 Physics::Physics() {
 
 	this->accel = this->maxAccel = this->minAccel = this->friction = Double2(0, 0);
-	this->movers = new std::vector<Mover*>;
+	this->movers = std::vector<Mover*> {};
 }
 
-void Physics::SetMovers(std::vector<Mover*> *movers) {
+void Physics::SetMovers(std::vector<Mover*> movers) {
 
 	this->movers = movers;
 }
 
 std::vector<Mover*> *Physics::GetMovers() {
 
-	return this->movers;
+	return &this->movers;
 }
 
 void Physics::AddForce(std::string name, double forceX, double forceY) {
@@ -147,7 +147,7 @@ void Physics::Calculate() {
 		this->accel.y = this->minAccel.y;
 	}
 
-	for(auto &val: *this->movers) {
+	for(auto &val: this->movers) {
 		val->Move(this->accel.x, this->accel.y);
 	}
 
@@ -174,22 +174,22 @@ void Physics::Calculate() {
 
 void Physics::Move(double x, double y) {
 
-	for(auto &val: *this->movers) {
+	for(auto &val: this->movers) {
 		val->Move(x, y);
 	}
 }
 
 void Physics::SetPosition(double x, double y) {
 
-	if(this->movers->size() == 0) {
+	if(this->movers.size() == 0) {
 		return;
 	}
 
-	Double2 disp = this->movers->at(0)->GetPosition();
+	Double2 disp = this->movers.at(0)->GetPosition();
 	disp.x = x - disp.x;
 	disp.y = y - disp.y;
 
-	for(auto &val: *this->movers) {
+	for(auto &val: this->movers) {
 		val->Move(disp.x, disp.y);
 	}
 }
@@ -213,11 +213,11 @@ double Physics::GetAcceleration(int axis) {
 
 Double2 Physics::GetPosition() {
 
-	if(this->movers->size() == 0) {
+	if(this->movers.size() == 0) {
 		return Double2(INFINITY, INFINITY);
 	}
 
-	return this->movers->at(0)->GetPosition();
+	return this->movers.at(0)->GetPosition();
 }
 
 }

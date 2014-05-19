@@ -627,8 +627,8 @@ public:
  * Methods:
  * ActorManager()
  * * Creates a new ActorManager.
- * void SetActors(std::vector<Actor*> *actors)
- * * Sets the Actor list to the provided vector pointer.
+ * void SetActors(std::vector<Actor*> actors)
+ * * Sets the Actor list to the provided vector.
  * std::vector<Actor*> *GetActors()
  * * Returns a pointer to the Actor list vector.
  * void RunKeyboardEvent(int key, int action)
@@ -655,10 +655,10 @@ public:
  * * Runs a drawing event.
  */
 class ActorManager {
-	std::vector<Actor*> *actors;
+	std::vector<Actor*> actors;
 public:
 	ActorManager();
-	void SetActors(std::vector<Actor*> *actors);
+	void SetActors(std::vector<Actor*> actors);
 	std::vector<Actor*> *GetActors();
 
 	void RunKeyboardEvent(int key, int action);
@@ -690,8 +690,8 @@ public:
  * Methods:
  * Physics()
  * * Creates a new Physics object.
- * void SetMovers(std::vector<Mover*> *movers)
- * * Sets the list of Mover objects to the given vector pointer.
+ * void SetMovers(std::vector<Mover*> movers)
+ * * Sets the list of Mover objects to the given vector.
  * std::vector<Mover*> *GetMovers()
  * * Returns a pointer to the list of Mover objects.
  * void AddForce(std::string name, double forceX, double forceY)
@@ -755,7 +755,7 @@ public:
  * * position of the Physics object's first Mover.
  */
 class Physics: public Mover {
-	std::vector<Mover*> *movers;
+	std::vector<Mover*> movers;
 	Double2 accel;
 	Double2 maxAccel;
 	Double2 minAccel;
@@ -765,7 +765,7 @@ class Physics: public Mover {
 	std::map<std::string, force> forces;
 public:
 	Physics();
-	void SetMovers(std::vector<Mover*> *movers);
+	void SetMovers(std::vector<Mover*> movers);
 	std::vector<Mover*> *GetMovers();
 	void AddForce(std::string name, double forceX, double forceY);
 	void EnableForce(std::string name);
@@ -955,7 +955,7 @@ void InitWindows();
  * * Returns true if the specified key is pressed.
  * bool GetMouseButtonState(int button)
  * * Returns true if the specified mouse button is pressed.
- * void SetActorManagers(std::vector<ActorManager*> *actorManagers)
+ * void SetActorManagers(std::vector<ActorManager*> actorManagers)
  * * Sets which ActorManager objects will be notified on a user input event.
  * std::vector<ActorManager*> *GetActorManagers()
  * * Returns a pointer to the ActorManager list being used.
@@ -970,7 +970,7 @@ class Window {
 	std::string title;
 	bool nativeMousePos;
 	GLFWwindow *glfw;
-	std::vector<ActorManager*> *actorManagers;
+	std::vector<ActorManager*> actorManagers;
 
 	std::map<int, bool> keyStates;
 	std::map<int, bool> mouseButtonStates;
@@ -1002,7 +1002,7 @@ public:
 	void _setKeyState(int key, bool state);
 	bool GetMouseButtonState(int button);
 	void _setMouseButtonState(int button, bool state);
-	void SetActorManagers(std::vector<ActorManager*> *actorManagers);
+	void SetActorManagers(std::vector<ActorManager*> actorManagers);
 	std::vector<ActorManager*> *GetActorManagers();
 	Double2 GetCursorPosition();
 	bool CheckForJoystick();

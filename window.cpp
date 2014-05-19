@@ -18,7 +18,7 @@ Window::Window(int width, int height, int nativeWidth, int nativeHeight, bool fu
 	this->nativeSize = Int2(nativeWidth, nativeHeight);
 	this->title = title;
 	this->fullscreen = fullscreen;
-	this->actorManagers = new std::vector<ActorManager*>;
+	this->actorManagers = std::vector<ActorManager*> {};
 }
 
 Window::~Window() {
@@ -30,10 +30,6 @@ Window::~Window() {
 void Window::Open() {
 
 	glfwSetErrorCallback(_errorCallback);
-
-	if(!glfwInit()) {
-		throw Error("Could not initialize GLFW");
-	}
 
 	if(this->fullscreen) {
 		this->glfw = glfwCreateWindow(this->size.x, this->size.y, this->title.data(), glfwGetPrimaryMonitor(), NULL);
@@ -73,8 +69,8 @@ void Window::UpdateEvents() {
 
 	for(int i=0; i<GLFW_KEY_LAST; i++) {
 		if(this->keyStates[i]) {
-			for(unsigned int j=0; j<this->actorManagers->size(); j++) {
-				this->actorManagers->at(j)->RunKeyboardEvent(i, Hold);
+			for(auto actorManager: this->actorManagers) {
+				actorManager->RunKeyboardEvent(i, Hold);
 			}
 		}
 	}
@@ -82,8 +78,8 @@ void Window::UpdateEvents() {
 	Double2 pos = this->GetCursorPosition();
 	for(int i=0; i<GLFW_MOUSE_BUTTON_LAST; i++) {
 		if(this->mouseButtonStates[i]) {
-			for(unsigned int j=0; j<this->actorManagers->size(); j++) {
-				this->actorManagers->at(j)->RunMouseButtonEvent(i, Hold, pos.x, pos.y);
+			for(auto actorManager: this->actorManagers) {
+				actorManager->RunMouseButtonEvent(i, Hold, pos.x, pos.y);
 			}
 		}
 	}
@@ -94,20 +90,20 @@ void Window::UpdateEvents() {
 		for(int i=0; i<size; i++) {
 			if(buttonStates[i] == GLFW_PRESS) {
 				if(this->joyBtnStates[i]) {
-					for(unsigned int j=0; j<this->actorManagers->size(); j++) {
-						this->actorManagers->at(j)->RunJoystickButtonEvent(i, Hold);
+					for(auto actorManager: this->actorManagers) {
+						actorManager->RunJoystickButtonEvent(i, Hold);
 					}
 				} else {
 					this->joyBtnStates[i] = true;
-					for(unsigned int j=0; j<this->actorManagers->size(); j++) {
-						this->actorManagers->at(j)->RunJoystickButtonEvent(i, Press);
+					for(auto actorManager: this->actorManagers) {
+						actorManager->RunJoystickButtonEvent(i, Press);
 					}
 				}
 			} else {
 				if(this->joyBtnStates[i]) {
 					this->joyBtnStates[i] = false;
-					for(unsigned int j=0; j<this->actorManagers->size(); j++) {
-						this->actorManagers->at(j)->RunJoystickButtonEvent(i, Release);
+					for(auto actorManager: this->actorManagers) {
+						actorManager->RunJoystickButtonEvent(i, Release);
 					}
 				}
 			}
@@ -120,8 +116,8 @@ void Window::UpdateEvents() {
 		for(int i=0; i<size; i++) {
 			if(axisStates[i] != this->joyAxisStates[i]) {
 				this->joyAxisStates[i] = axisStates[i];
-				for(unsigned int j=0; j<this->actorManagers->size(); j++) {
-					this->actorManagers->at(j)->RunJoystickAxisEvent(i, (double)this->joyAxisStates[i]);
+				for(auto actorManager: this->actorManagers) {
+					actorManager->RunJoystickAxisEvent(i, (double)this->joyAxisStates[i]);
 				}
 			}
 		}
@@ -197,14 +193,14 @@ void Window::SetNativeMouseCorrection(bool shouldBeNative) {
 	this->nativeMousePos = shouldBeNative;
 }
 
-void Window::SetActorManagers(std::vector<ActorManager*> *actorManagers) {
+void Window::SetActorManagers(std::vector<ActorManager*> actorManagers) {
 
 	this->actorManagers = actorManagers;
 }
 
 std::vector<ActorManager*> *Window::GetActorManagers() {
 
-	return this->actorManagers;
+	return &this->actorManagers;
 }
 
 Double2 Window::GetCursorPosition() {
@@ -231,8 +227,8 @@ bool Window::CheckForJoystick() {
 
 	if((glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE) != this->isJoystick) {
 		this->isJoystick = !this->isJoystick;
-		for(unsigned int j=0; j<this->actorManagers->size(); j++) {
-			this->actorManagers->at(j)->RunJoystickDeviceEvent(this->isJoystick);
+		for(auto actorManager: this->actorManagers) {
+			actorManager->RunJoystickDeviceEvent(this->isJoystick);
 		}
 	}
 
@@ -273,8 +269,8 @@ void _keyboardCallback(GLFWwindow *window, int key, int scancode, int action, in
 
 	_glfwToWindow[window]->_setKeyState(key, action == Press);
 
-	for(unsigned int i=0; i<_glfwToWindow[window]->GetActorManagers()->size(); i++) {
-		_glfwToWindow[window]->GetActorManagers()->at(i)->RunKeyboardEvent(key, action);
+	for(auto actorManager: *_glfwToWindow[window]->GetActorManagers()) {
+		actorManager->RunKeyboardEvent(key, action);
 	}
 }
 
@@ -284,8 +280,8 @@ void _mouseButtonCallback(GLFWwindow *window, int button, int action, int mod) {
 
 	_glfwToWindow[window]->_setMouseButtonState(button, action == Press);
 
-	for(unsigned int i=0; i<_glfwToWindow[window]->GetActorManagers()->size(); i++) {
-		_glfwToWindow[window]->GetActorManagers()->at(i)->RunMouseButtonEvent(button, action, pos.x, pos.y);
+	for(auto actorManager: *_glfwToWindow[window]->GetActorManagers()) {
+		actorManager->RunMouseButtonEvent(button, action, pos.x, pos.y);
 	}
 }
 
@@ -293,8 +289,8 @@ void _mousePositionCallback(GLFWwindow *window, double x, double y) {
 
 	Double2 pos = _glfwToWindow[window]->GetCursorPosition();
 
-	for(unsigned int i=0; i<_glfwToWindow[window]->GetActorManagers()->size(); i++) {
-		_glfwToWindow[window]->GetActorManagers()->at(i)->RunMousePositionEvent(pos.x, pos.y);
+	for(auto actorManager: *_glfwToWindow[window]->GetActorManagers()) {
+		actorManager->RunMousePositionEvent(pos.x, pos.y);
 	}
 }
 
@@ -304,8 +300,8 @@ void _mouseEnterWindowCallback(GLFWwindow *window, int entered) {
 
 	bool enteredBool = (entered == GL_TRUE);
 
-	for(unsigned int i=0; i<_glfwToWindow[window]->GetActorManagers()->size(); i++) {
-		_glfwToWindow[window]->GetActorManagers()->at(i)->RunMouseEnterWindowEvent(pos.x, pos.y, enteredBool);
+	for(auto actorManager: *_glfwToWindow[window]->GetActorManagers()) {
+		actorManager->RunMouseEnterWindowEvent(pos.x, pos.y, enteredBool);
 	}
 }
 
@@ -313,8 +309,8 @@ void _windowFocusCallback(GLFWwindow *window, int focused) {
 
 	bool focusedBool = (focused == GL_TRUE);
 
-	for(unsigned int i=0; i<_glfwToWindow[window]->GetActorManagers()->size(); i++) {
-		_glfwToWindow[window]->GetActorManagers()->at(i)->RunWindowFocusEvent(focusedBool);
+	for(auto actorManager: *_glfwToWindow[window]->GetActorManagers()) {
+		actorManager->RunWindowFocusEvent(focusedBool);
 	}
 }
 
@@ -322,8 +318,8 @@ void _windowResizeCallback(GLFWwindow *window, int width, int height) {
 
 	_glfwToWindow[window]->SetSize(width, height);
 
-	for(unsigned int i=0; i<_glfwToWindow[window]->GetActorManagers()->size(); i++) {
-		_glfwToWindow[window]->GetActorManagers()->at(i)->RunWindowResizeEvent(width, height);
+	for(auto actorManager: *_glfwToWindow[window]->GetActorManagers()) {
+		actorManager->RunWindowResizeEvent(width, height);
 	}
 
 	glViewport(0, 0, width, height);
