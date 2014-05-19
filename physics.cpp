@@ -4,7 +4,10 @@ namespace paunch {
 
 Physics::Physics() {
 
-	this->accel = this->maxAccel = this->minAccel = this->friction = Double2(0, 0);
+	this->accel = Double2(0, 0);
+	this->maxAccel = Double2(0, 0);
+	this->minAccel = Double2(0, 0);
+	this->friction = Double2(0, 0);
 	this->movers = std::vector<Mover*> {};
 }
 
@@ -157,7 +160,7 @@ void Physics::Calculate() {
 		} else {
 			this->accel.x += this->friction.x;
 		}
-	} else if(std::abs(this->friction.x != 0)) {
+	} else if(this->friction.x != 0) {
 		this->accel.x = 0;
 	}
 
@@ -167,7 +170,7 @@ void Physics::Calculate() {
 		} else {
 			this->accel.y += this->friction.y;
 		}
-	} else if(std::abs(this->friction.y != 0)) {
+	} else if(this->friction.y != 0) {
 		this->accel.y = 0;
 	}
 }
