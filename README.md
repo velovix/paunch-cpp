@@ -1,13 +1,13 @@
 paunch-cpp
 ======
 
-Paunch-cpp is the C++ implementation of Paunch, a 2D game engine.
+Paunch-cpp is a C++ implementation of Paunch, a 2D game engine.
 
 Development Status
 ------------------
-Paunch is still heavily in development, and lacks the key features and proper
-testing that characterizes a solid game engine. Please check back frequently,
-as work is being done on Paunch almost every day.
+Paunch-cpp is buggy, unstable, and probably not particularly well-written. I
+wrote a C++ implementation mostly for experimental purposes. This code would
+probably only be useful as a base for your own development.
 
 Features
 --------
@@ -25,4 +25,6 @@ Features
 To Do
 -----
 - Support for pre-3.0 OpenGL versions
+- Serious bug-fixing
+- Smaller improvements from the Go implementation
 - Probably more...
